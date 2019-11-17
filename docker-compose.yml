@@ -1,0 +1,40 @@
+version: '3'
+services:
+  php-apache:
+    build:
+        context: ./php-apache
+    ports: 
+      - 8888:80
+    volumes:
+      - ./DocumentRoot:/var/www/html
+    links:
+      - 'mariadb'
+      
+  mariadb:
+    image: mariadb:10.1
+    volumes:
+        - mariadb:/var/lib/mysql
+    # Set env variables
+    environment:
+        TZ: 'America/Denver'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+        MYSQL_ROOT_PASSWORD: 'password'
+        MYSQL_USER: 'maria'
+        MYSQL_PASSWORD: 'password'
+        MYSQL_DATABASE: 'testdb'
+
+  solr:
+    image: solr:8
+    #build: # this is failing to build
+    #  context: ./solr
+    ports:
+     - "8983:8983"
+    volumes:
+      - solr:/var/solr
+    command:
+      - solr-precreate
+      - gettingstarted
+  
+volumes:
+  mariadb:
+  solr:
